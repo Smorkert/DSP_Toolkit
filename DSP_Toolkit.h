@@ -640,4 +640,52 @@ struct dif_compression16{
 };
 
 
+//Moving average in C
+#define MAVE_SIZE 8
+
+typedef struct {
+	int32_t unBuffer[MAVE_SIZE];
+	int32_t sum;
+	uint32_t index, state, N;
+
+	int16_t (*average)(void* instance, int16_t input);
+
+} moving_average;
+
+
+int16_t mAve(void* instance, int16_t input){
+
+	moving_average* self = (moving_average*)instance;
+
+    //initialize register
+    if(self->state == 0){
+        self->unBuffer[self->index] = input;
+        self->index += 1;
+        //take average
+        if(self->index == self->N){
+            for(uint16_t i=0;i<self->N; i++){
+                self->sum += self->unBuffer[i];
+            }
+            //change state
+            self->state = 1;
+            //reset indexer
+            self->index = 0;
+            return self->sum/self->N;
+        }
+    }
+    else{
+        //compute current moving average
+        self->sum = ((self->sum+input)-self->unBuffer[self->index]);
+        //shift samples
+        self->unBuffer[self->index] = input;
+        self->index += 1;
+        //reset indexer
+        if(self->index >= self->N){
+            self->index = 0;
+        }
+    }
+    return self->sum/self->N;
+};
+
+
 #endif
