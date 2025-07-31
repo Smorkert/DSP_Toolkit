@@ -639,8 +639,15 @@ struct dif_compression16{
     }
 };
 
-
-//Moving average in C
+/*  Moving Average Filter of  user defined order (in C)
+ *  unBuffer = [indexer, state,1,...,N];
+ *
+ *  To use:
+ *  1. Define order of filter: #define MAVE_SIZE X
+ *  1. Declare: moving_average name
+ *  2. Before main loop initialize: name.average = mAve; & name.N = MAVE_SIZE;
+ *  3. Call function as: output = name.average(&name, input);
+*/
 #define MAVE_SIZE 8
 
 typedef struct {
